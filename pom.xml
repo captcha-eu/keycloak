@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>eu.captcha</groupId>
+  <artifactId>keycloak-captcha</artifactId>
+  <version>1.0.0</version>
+  <name>Captcha.eu for Keycloak</name>
+  <description>captcha.eu GDPR compliant alternative</description>
+  <packaging>jar</packaging>
+
+  <properties>
+    <version.keycloak>21.0.1</version.keycloak>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencyManagement>
+      <dependencies>
+          <dependency>
+              <groupId>org.keycloak</groupId>
+              <artifactId>keycloak-parent</artifactId>
+              <version>${version.keycloak}</version>
+              <type>pom</type>
+              <scope>import</scope>
+          </dependency>
+      </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+      <dependency>
+          <groupId>org.keycloak</groupId>
+          <artifactId>keycloak-core</artifactId>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.keycloak</groupId>
+          <artifactId>keycloak-server-spi</artifactId>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.keycloak</groupId>
+          <artifactId>keycloak-server-spi-private</artifactId>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.keycloak</groupId>
+          <artifactId>keycloak-services</artifactId>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore</artifactId>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+          <scope>provided</scope>
+      </dependency>
+  </dependencies>
+  <build>
+      <finalName>${project.artifactId}</finalName>
+  </build>
+</project>
