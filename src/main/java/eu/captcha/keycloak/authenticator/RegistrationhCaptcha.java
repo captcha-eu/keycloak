@@ -34,10 +34,10 @@ import java.util.List;
 import java.util.Map;
 
 public class RegistrationhCaptcha implements FormAction, FormActionFactory {
-    public static final String CAPTCHA_RESPONSE = "h-captcha-response";
+    public static final String CAPTCHA_RESPONSE = "captcha-eu-response";
     public static final String CAPTCHA_REFERENCE_CATEGORY = "captcha-eu";
-    public static final String PUBLIC_KEY = "xxxx";
-    public static final String REST_KEY = "xxxx";
+    public static final String PUBLIC_KEY = "captcha.eu.public.key";
+    public static final String REST_KEY = "captcha.eu.rest.key";
     public static final String PROVIDER_ID = "registration-captcha-action";
 
     @Override
