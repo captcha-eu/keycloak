@@ -146,6 +146,14 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
         logger.info(sol);
         logger.info(secret);
         logger.info("HJA");
+
+        errors.add(new FormMessage(null, Messages.RECAPTCHA_FAILED));
+        formData.remove(CAPTCHA_RESPONSE);
+        context.error(Errors.INVALID_REGISTRATION);
+        context.validationError(formData, errors);
+        context.excludeOtherErrors();
+        return;
+
 /*
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
         List<FormMessage> errors = new ArrayList<>();
