@@ -11,6 +11,7 @@ import org.keycloak.authentication.FormContext;
 import org.keycloak.authentication.ValidationContext;
 import org.keycloak.connections.httpclient.HttpClientProvider;
 import org.keycloak.events.Details;
+import java.net.URI;
 import org.keycloak.events.Errors;
 import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.models.AuthenticationExecutionModel;
@@ -29,14 +30,20 @@ import org.keycloak.util.JsonSerialization;
 
 import java.io.InputStream;
 import javax.ws.rs.core.MultivaluedMap;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import com.google.gson.Gson;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
+import java.net.http.HttpResponse;
+import java.io.IOException;
 
 
 public class RegistrationCaptcha implements FormAction, FormActionFactory {
@@ -131,7 +138,24 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
         form.addScript("https://www.captcha.eu/sdk.js");
 
     }
+    public static boolean validateCaptchaAt(String sol) throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://w19.captcha.at/validate"))
+                .POST(HttpRequest.BodyPublishers.ofString(sol, StandardCharsets.UTF_8))
+                .header("Rest-Key", "RMjaDpgTXMXwMVsZRlGA-2160b7740db577615fa23c2a4159d06e9b1a1c32")
+                .header("Content-Type", "application/json")
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        String responseBody = response.body();
 
+        class CaptchaResult {
+            boolean success;
+        }
+
+        CaptchaResult cr = new Gson().fromJson(responseBody, CaptchaResult.class);
+        return cr.success;
+    }
     @Override
     public void validate(ValidationContext context) {
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
