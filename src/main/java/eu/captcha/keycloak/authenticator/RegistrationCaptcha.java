@@ -44,6 +44,7 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
     public static final String CAPTCHA_REFERENCE_CATEGORY = "captcha-eu";
     public static final String PUBLIC_KEY = "captcha.eu.public.key";
     public static final String REST_KEY = "captcha.eu.rest.key";
+    public static final String CAPTCHA_FAILED = "Captcha.eu failed to verify";
     public static final String PROVIDER_ID = "registration-captcha-action";
 
     private static final String CUSTOM_TEMPLATE = "captcha.ftl";
@@ -147,7 +148,7 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
         logger.info(secret);
         logger.info("HJA");
 
-        errors.add(new FormMessage(null, Messages.RECAPTCHA_FAILED));
+        errors.add(new FormMessage(null, CAPTCHA_FAILED));
         formData.remove(CAPTCHA_RESPONSE);
         context.error(Errors.INVALID_REGISTRATION);
         context.validationError(formData, errors);
