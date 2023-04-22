@@ -1,13 +1,10 @@
 package eu.captcha.keycloak.authenticator;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-import org.keycloak.Config.Scope;
+import org.jboss.logging.Logger;
+import org.keycloak.Config;
 import org.keycloak.authentication.FormAction;
 import org.keycloak.authentication.FormActionFactory;
 import org.keycloak.authentication.FormContext;
@@ -16,29 +13,41 @@ import org.keycloak.connections.httpclient.HttpClientProvider;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
 import org.keycloak.forms.login.LoginFormsProvider;
-import org.keycloak.models.*;
-import org.keycloak.models.AuthenticationExecutionModel.Requirement;
+import org.keycloak.models.AuthenticationExecutionModel;
+import org.keycloak.models.AuthenticatorConfigModel;
+import org.keycloak.models.KeycloakSession;
+import org.keycloak.models.KeycloakSessionFactory;
+import org.keycloak.models.RealmModel;
+import org.keycloak.models.UserModel;
 import org.keycloak.models.utils.FormMessage;
+import org.keycloak.provider.ConfiguredProvider;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.services.ServicesLogger;
 import org.keycloak.services.messages.Messages;
 import org.keycloak.services.validation.Validation;
 import org.keycloak.util.JsonSerialization;
 
-import javax.ws.rs.core.MultivaluedMap;
-
 import java.io.InputStream;
+import javax.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 
-public class RegistrationhCaptcha implements FormAction, FormActionFactory {
+
+public class RegistrationCaptcha implements FormAction, FormActionFactory {
     public static final String CAPTCHA_RESPONSE = "captcha-eu-response";
     public static final String CAPTCHA_REFERENCE_CATEGORY = "captcha-eu";
     public static final String PUBLIC_KEY = "captcha.eu.public.key";
     public static final String REST_KEY = "captcha.eu.rest.key";
     public static final String PROVIDER_ID = "registration-captcha-action";
+
+    private static final String CUSTOM_TEMPLATE = "captcha.ftl";
+
 
     @Override
     public void close() {
@@ -51,7 +60,7 @@ public class RegistrationhCaptcha implements FormAction, FormActionFactory {
     }
 
     @Override
-    public void init(Scope config) {
+    public void init(Config.Scope config) {
 
     }
 
@@ -59,6 +68,8 @@ public class RegistrationhCaptcha implements FormAction, FormActionFactory {
     public void postInit(KeycloakSessionFactory factory) {
 
     }
+
+
 
     @Override
     public String getId() {
@@ -85,7 +96,7 @@ public class RegistrationhCaptcha implements FormAction, FormActionFactory {
             AuthenticationExecutionModel.Requirement.DISABLED
     };
     @Override
-    public Requirement[] getRequirementChoices() {
+    public AuthenticationExecutionModel.Requirement[] getRequirementChoices() {
         return REQUIREMENT_CHOICES;
     }
 
@@ -98,6 +109,7 @@ public class RegistrationhCaptcha implements FormAction, FormActionFactory {
     public String getHelpText() {
         return "Adds the seamless integrated captcha.eu GDPR compliant captcha";
     }
+
 
 
     @Override
@@ -121,7 +133,20 @@ public class RegistrationhCaptcha implements FormAction, FormActionFactory {
 
     @Override
     public void validate(ValidationContext context) {
+        MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
+        List<FormMessage> errors = new ArrayList<>();
+        Logger logger = Logger.getLogger("my.logger.name");
+        logger.info("HJA");
 
+        boolean success = false;
+        AuthenticatorConfigModel captchaConfig = context.getAuthenticatorConfig();
+        String secret = captchaConfig.getConfig().get(REST_KEY);
+
+        List<String> sol = formData.get("captcha_at_solution");
+        logger.info(sol);
+        logger.info(secret);
+        logger.info("HJA");
+/*
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
         List<FormMessage> errors = new ArrayList<>();
         boolean success = false;
@@ -145,7 +170,7 @@ public class RegistrationhCaptcha implements FormAction, FormActionFactory {
             return;
 
         }
-
+*/
     }
 
 
