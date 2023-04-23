@@ -36,7 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import com.google.gson.Gson;
+
 import java.util.Map;
 import java.util.Optional;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -138,23 +138,24 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
         form.addScript("https://www.captcha.eu/sdk.js");
 
     }
-    public static boolean validateCaptchaAt(String sol) throws IOException, InterruptedException {
+    public static boolean validateCaptchaAt(String sol, String secret) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://w19.captcha.at/validate"))
                 .POST(HttpRequest.BodyPublishers.ofString(sol, StandardCharsets.UTF_8))
-                .header("Rest-Key", "RMjaDpgTXMXwMVsZRlGA-2160b7740db577615fa23c2a4159d06e9b1a1c32")
+                .header("Rest-Key", secret)
                 .header("Content-Type", "application/json")
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         String responseBody = response.body();
 
-        class CaptchaResult {
-            boolean success;
-        }
+        Logger logger = Logger.getLogger("my.logger.name");
+logger.info(responseBody);
 
-        CaptchaResult cr = new Gson().fromJson(responseBody, CaptchaResult.class);
-        return cr.success;
+        int start = responseBody.indexOf("success\":") + 9;
+        int end = responseBody.indexOf(",", start);
+        String successValue = responseBody.substring(start, end);
+        return Boolean.parseBoolean(successValue);
     }
     @Override
     public void validate(ValidationContext context) {
@@ -164,46 +165,28 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
         logger.info("HJA");
 
         boolean success = false;
+
+
+
         AuthenticatorConfigModel captchaConfig = context.getAuthenticatorConfig();
         String secret = captchaConfig.getConfig().get(REST_KEY);
 
-        List<String> sol = formData.get("captcha_at_solution");
-        logger.info(sol);
-        logger.info(secret);
-        logger.info("HJA");
+        String sol = formData.getFirst("captcha_at_solution");
 
-        errors.add(new FormMessage(null, CAPTCHA_FAILED));
-        formData.remove(CAPTCHA_RESPONSE);
-        context.error(Errors.INVALID_REGISTRATION);
-        context.validationError(formData, errors);
-        context.excludeOtherErrors();
-        return;
+        try {
+            success = validateCaptchaAt(sol, secret);
+        } catch (IOException | InterruptedException e) {
 
-/*
-        MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
-        List<FormMessage> errors = new ArrayList<>();
-        boolean success = false;
-        context.getEvent().detail(Details.REGISTER_METHOD, "form");
-
-        String captcha = formData.getFirst(CAPTCHA_RESPONSE);
-        if (!Validation.isBlank(captcha)) {
-            AuthenticatorConfigModel captchaConfig = context.getAuthenticatorConfig();
-            String secret = captchaConfig.getConfig().get(REST_KEY);
-
-            success = validateRecaptcha(context, success, captcha, secret);
         }
-        if (success) {
-            context.success();
-        } else {
-            errors.add(new FormMessage(null, Messages.RECAPTCHA_FAILED));
+        if (!success) {
+            errors.add(new FormMessage(null, CAPTCHA_FAILED));
             formData.remove(CAPTCHA_RESPONSE);
             context.error(Errors.INVALID_REGISTRATION);
             context.validationError(formData, errors);
             context.excludeOtherErrors();
             return;
-
         }
-*/
+        context.success();
     }
 
 
