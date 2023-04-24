@@ -175,8 +175,8 @@ logger.info(responseBody);
 
         try {
             success = validateCaptchaAt(sol, secret);
-        } catch (IOException | InterruptedException e) {
-
+        } catch (Exception e) {
+            success = false;
         }
         if (!success) {
             errors.add(new FormMessage(null, CAPTCHA_FAILED));
