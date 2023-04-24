@@ -1,0 +1,6 @@
+- [x] register
+- [ ] login: 
+  - [ ] username+pw
+  - [ ] username https://github.com/keycloak/keycloak/blob/main/services/src/main/java/org/keycloak/authentication/authenticators/browser/UsernameForm.java
+  - [ ] pw https://github.com/keycloak/keycloak/blob/main/services/src/main/java/org/keycloak/authentication/authenticators/browser/PasswordForm.java
+- [ ] Reset password https://sourcegraph.com/github.com/keycloak/keycloak/-/blob/services/src/main/java/org/keycloak/authentication/authenticators/resetcred/ResetPassword.java
