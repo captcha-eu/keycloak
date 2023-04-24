@@ -138,25 +138,7 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
         form.addScript("https://www.captcha.eu/sdk.js");
 
     }
-    public static boolean validateCaptchaAt(String sol, String secret) throws IOException, InterruptedException {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://w19.captcha.at/validate"))
-                .POST(HttpRequest.BodyPublishers.ofString(sol, StandardCharsets.UTF_8))
-                .header("Rest-Key", secret)
-                .header("Content-Type", "application/json")
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        String responseBody = response.body();
 
-        Logger logger = Logger.getLogger("my.logger.name");
-logger.info(responseBody);
-
-        int start = responseBody.indexOf("success\":") + 9;
-        int end = responseBody.indexOf(",", start);
-        String successValue = responseBody.substring(start, end);
-        return Boolean.parseBoolean(successValue);
-    }
     @Override
     public void validate(ValidationContext context) {
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
@@ -174,7 +156,7 @@ logger.info(responseBody);
         String sol = formData.getFirst("captcha_at_solution");
 
         try {
-            success = validateCaptchaAt(sol, secret);
+            success = Shared.validateCaptchaAt(sol, secret);
         } catch (Exception e) {
             success = false;
         }
@@ -190,9 +172,7 @@ logger.info(responseBody);
     }
 
 
-    protected boolean validateRecaptcha(ValidationContext context, boolean success, String captcha, String secret) {
-      return true;
-    }
+
 
     @Override
     public void success(FormContext context) {

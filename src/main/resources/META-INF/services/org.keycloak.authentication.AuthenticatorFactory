@@ -1,1 +1,3 @@
 eu.captcha.keycloak.authenticator.UsernamePasswordFormFactory
+eu.captcha.keycloak.authenticator.ResetCredentialChooseUser
+
