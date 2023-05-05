@@ -1,9 +1,10 @@
 package eu.captcha.keycloak.authenticator;
-import org.jboss.logging.Logger;
+
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.Authenticator;
-import org.keycloak.events.Errors;
+import org.keycloak.authentication.authenticators.browser.AbstractUsernameFormAuthenticator;
 import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.models.AuthenticatorConfigModel;
 import org.keycloak.models.KeycloakSession;
@@ -11,26 +12,16 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.utils.FormMessage;
 import org.keycloak.protocol.oidc.OIDCLoginProtocol;
-import org.keycloak.sessions.AuthenticationSessionModel;
-import org.keycloak.services.managers.AuthenticationManager;
 import org.keycloak.services.ServicesLogger;
-
-import org.keycloak.authentication.authenticators.browser.AbstractUsernameFormAuthenticator;
+import org.keycloak.services.managers.AuthenticationManager;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-public class UsernamePasswordForm extends AbstractUsernameFormAuthenticator  implements  Authenticator {
+
+public class UsernamePasswordForm extends AbstractUsernameFormAuthenticator implements Authenticator {
     protected static ServicesLogger log = ServicesLogger.LOGGER;
 
 
@@ -39,13 +30,12 @@ public class UsernamePasswordForm extends AbstractUsernameFormAuthenticator  imp
                 .setError(errorMessage)
                 .createErrorPage(Response.Status.UNAUTHORIZED);
     }
+
     @Override
     public void action(AuthenticationFlowContext context) {
-        log.info("HJA: action");
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
         List<FormMessage> errors = new ArrayList<>();
         boolean success = false;
-
 
 
         AuthenticatorConfigModel captchaConfig = context.getAuthenticatorConfig();
@@ -64,7 +54,6 @@ public class UsernamePasswordForm extends AbstractUsernameFormAuthenticator  imp
         }
 
 
-
         if (formData.containsKey("cancel")) {
             context.cancelLogin();
             return;
@@ -81,7 +70,6 @@ public class UsernamePasswordForm extends AbstractUsernameFormAuthenticator  imp
 
     @Override
     public void authenticate(AuthenticationFlowContext context) {
-        log.info("HJA: authenticate");
         MultivaluedMap<String, String> formData = new MultivaluedMapImpl<>();
         String loginHint = context.getAuthenticationSession().getClientNote(OIDCLoginProtocol.LOGIN_HINT_PARAM);
 

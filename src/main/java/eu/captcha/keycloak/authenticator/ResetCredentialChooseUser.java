@@ -1,16 +1,19 @@
 package eu.captcha.keycloak.authenticator;
 
 
-import org.keycloak.forms.login.LoginFormsProvider;
-import org.keycloak.models.*;
 import org.jboss.logging.Logger;
 import org.keycloak.Config;
-import org.keycloak.authentication.*;
+import org.keycloak.authentication.AuthenticationFlowContext;
+import org.keycloak.authentication.AuthenticationFlowError;
+import org.keycloak.authentication.Authenticator;
+import org.keycloak.authentication.AuthenticatorFactory;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
 import org.keycloak.authentication.authenticators.browser.AbstractUsernameFormAuthenticator;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
 import org.keycloak.events.EventBuilder;
+import org.keycloak.forms.login.LoginFormsProvider;
+import org.keycloak.models.*;
 import org.keycloak.models.utils.FormMessage;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.services.messages.Messages;
@@ -34,8 +37,6 @@ public class ResetCredentialChooseUser implements Authenticator, AuthenticatorFa
 
     @Override
     public void authenticate(AuthenticationFlowContext context) {
-        Logger logger = Logger.getLogger("my.logger.name");
-        logger.info("HJA-Reset-Choose User authenticate");
 
         LoginFormsProvider form = context.form();
 
@@ -78,13 +79,11 @@ public class ResetCredentialChooseUser implements Authenticator, AuthenticatorFa
     @Override
     public void action(AuthenticationFlowContext context) {
 
-        Logger logger = Logger.getLogger("my.logger.name");
-        logger.info("HJA-Reset-Choose User action");
+
         EventBuilder event = context.getEvent();
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
 
         boolean success = false;
-
 
 
         AuthenticatorConfigModel captchaConfig = context.getAuthenticatorConfig();
@@ -109,8 +108,6 @@ public class ResetCredentialChooseUser implements Authenticator, AuthenticatorFa
         }
 
 
-
-
         String username = formData.getFirst("username");
         if (username == null || username.isEmpty()) {
             event.error(Errors.USERNAME_MISSING);
@@ -126,7 +123,7 @@ public class ResetCredentialChooseUser implements Authenticator, AuthenticatorFa
         RealmModel realm = context.getRealm();
         UserModel user = context.getSession().users().getUserByUsername(realm, username);
         if (user == null && realm.isLoginWithEmailAllowed() && username.contains("@")) {
-            user =  context.getSession().users().getUserByEmail(realm, username);
+            user = context.getSession().users().getUserByEmail(realm, username);
         }
 
         context.getAuthenticationSession().setAuthNote(AbstractUsernameFormAuthenticator.ATTEMPTED_USERNAME, username);

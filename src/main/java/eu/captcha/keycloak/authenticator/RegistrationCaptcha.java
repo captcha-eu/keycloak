@@ -1,49 +1,20 @@
 package eu.captcha.keycloak.authenticator;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-import org.jboss.logging.Logger;
+
 import org.keycloak.Config;
 import org.keycloak.authentication.FormAction;
 import org.keycloak.authentication.FormActionFactory;
 import org.keycloak.authentication.FormContext;
 import org.keycloak.authentication.ValidationContext;
-import org.keycloak.connections.httpclient.HttpClientProvider;
-import org.keycloak.events.Details;
-import java.net.URI;
 import org.keycloak.events.Errors;
 import org.keycloak.forms.login.LoginFormsProvider;
-import org.keycloak.models.AuthenticationExecutionModel;
-import org.keycloak.models.AuthenticatorConfigModel;
-import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.KeycloakSessionFactory;
-import org.keycloak.models.RealmModel;
-import org.keycloak.models.UserModel;
+import org.keycloak.models.*;
 import org.keycloak.models.utils.FormMessage;
-import org.keycloak.provider.ConfiguredProvider;
 import org.keycloak.provider.ProviderConfigProperty;
-import org.keycloak.services.ServicesLogger;
 import org.keycloak.services.messages.Messages;
-import org.keycloak.services.validation.Validation;
-import org.keycloak.util.JsonSerialization;
 
-import java.io.InputStream;
 import javax.ws.rs.core.MultivaluedMap;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-
-import java.util.Map;
-import java.util.Optional;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.util.EntityUtils;
-import java.net.http.HttpResponse;
-import java.io.IOException;
 
 
 public class RegistrationCaptcha implements FormAction, FormActionFactory {
@@ -78,7 +49,6 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
     }
 
 
-
     @Override
     public String getId() {
         return PROVIDER_ID;
@@ -86,7 +56,7 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
 
     @Override
     public String getDisplayType() {
-        return "captcha.eu";
+        return "captcha.eu: Registration";
     }
 
     @Override
@@ -103,6 +73,7 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
             AuthenticationExecutionModel.Requirement.REQUIRED,
             AuthenticationExecutionModel.Requirement.DISABLED
     };
+
     @Override
     public AuthenticationExecutionModel.Requirement[] getRequirementChoices() {
         return REQUIREMENT_CHOICES;
@@ -119,7 +90,6 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
     }
 
 
-
     @Override
     public void buildPage(FormContext context, LoginFormsProvider form) {
         AuthenticatorConfigModel captchaConfig = context.getAuthenticatorConfig();
@@ -127,7 +97,7 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
 
         if (captchaConfig == null || captchaConfig.getConfig() == null
                 || captchaConfig.getConfig().get(PUBLIC_KEY) == null
-                ) {
+        ) {
             form.addError(new FormMessage(null, Messages.RECAPTCHA_NOT_CONFIGURED));
             return;
         }
@@ -143,11 +113,8 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
     public void validate(ValidationContext context) {
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
         List<FormMessage> errors = new ArrayList<>();
-        Logger logger = Logger.getLogger("my.logger.name");
-        logger.info("HJA");
 
         boolean success = false;
-
 
 
         AuthenticatorConfigModel captchaConfig = context.getAuthenticatorConfig();
@@ -170,8 +137,6 @@ public class RegistrationCaptcha implements FormAction, FormActionFactory {
         }
         context.success();
     }
-
-
 
 
     @Override
