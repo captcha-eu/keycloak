@@ -1,3 +1,0 @@
-- [x] register
-- [x] login: 
-  - [ ] Reset password https://sourcegraph.com/github.com/keycloak/keycloak/-/blob/services/src/main/java/org/keycloak/authentication/authenticators/resetcred/ResetPassword.java
