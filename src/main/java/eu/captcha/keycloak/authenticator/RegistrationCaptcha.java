@@ -9,15 +9,16 @@ import org.keycloak.events.Errors;
 import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.models.*;
 import org.keycloak.models.utils.FormMessage;
+import org.keycloak.provider.ConfiguredProvider;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.services.messages.Messages;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class RegistrationCaptcha implements FormAction, FormActionFactory {
+public class RegistrationCaptcha implements FormAction, FormActionFactory, ConfiguredProvider {
     public static final String CAPTCHA_RESPONSE = "captcha-eu-response";
     public static final String CAPTCHA_REFERENCE_CATEGORY = "captcha-eu";
     public static final String PUBLIC_KEY = "captcha.eu.public.key";
