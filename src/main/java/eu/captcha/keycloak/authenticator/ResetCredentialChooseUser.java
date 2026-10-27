@@ -35,19 +35,21 @@ public class ResetCredentialChooseUser implements Authenticator, AuthenticatorFa
 
     public static final String PROVIDER_ID = "captcha-eu-chooser";
 
-    @Override
-    public void authenticate(AuthenticationFlowContext context) {
-
-        LoginFormsProvider form = context.form();
-
+    // Every rendering of the reset form needs the captcha widget, including re-renders after a failed attempt
+    private void addCaptcha(AuthenticationFlowContext context) {
         AuthenticatorConfigModel authenticatorConfig = context.getAuthenticatorConfig();
         Map<String, String> config = authenticatorConfig.getConfig();
 
-
-        String publicKey = config.get("publicKey");
+        LoginFormsProvider form = context.form();
         form.setAttribute("captchaEnabled", true);
-        form.setAttribute("captchaEUPublicKey", publicKey);
+        form.setAttribute("captchaEUPublicKey", config.get("publicKey"));
         form.addScript("https://www.captcha.eu/sdk.js");
+    }
+
+    @Override
+    public void authenticate(AuthenticationFlowContext context) {
+
+        addCaptcha(context);
 
         String existingUserId = context.getAuthenticationSession().getAuthNote(AbstractIdpAuthenticator.EXISTING_USER_INFO);
         if (existingUserId != null) {
@@ -81,6 +83,7 @@ public class ResetCredentialChooseUser implements Authenticator, AuthenticatorFa
 
 
         EventBuilder event = context.getEvent();
+        addCaptcha(context);
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
 
         boolean success = false;
