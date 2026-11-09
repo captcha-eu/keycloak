@@ -89,7 +89,6 @@ public class UsernamePasswordForm extends AbstractUsernameFormAuthenticator impl
 
 
             String publicKey = config.get("publicKey");
-            log.info(config);
             form.setAttribute("captchaEnabled", true);
             form.setAttribute("captchaEUPublicKey", publicKey);
             form.addScript("https://www.captcha.eu/sdk.js");
